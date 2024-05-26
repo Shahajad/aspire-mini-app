@@ -82,3 +82,24 @@ To test the authenticated endpoints using Swagger UI:
 1. Open your browser and navigate to `http://localhost:8080/swagger-ui/index.html`.
 2. In the top right corner, you will see an "Authorize" button.
 3. Click on the "Authorize" button and enter your JWT token in the following format:
+
+### Default Users for Testing
+For testing purposes, this service will by default create three users:
+
+1. **Admin User**:
+- **ID**: admin
+- **Username**: admin
+- **Password**: admin
+- **Role**: ADMIN
+
+2. **Regular User 1**:
+- **ID**: user1
+- **Username**: user1
+- **Password**: user1
+- **Role**: USER
+
+3. **Regular User 2**:
+- **ID**: user2
+- **Username**: user2
+- **Password**: user2
+- **Role**: USER
