@@ -82,19 +82,23 @@ public class LoanService {
     }
 
     public void addRepayment(LoanRequest request, User user) {
-        String userId = user.getUsername();
         Long loanId = request.getId();
-        if(!userLoanStore.containsKey(userId)){
-            throw new RuntimeException("loan not found");
-        }
-        LoanRequest loanRequest = getLoanRequest(userLoanStore.get(userId), loanId);
+        LoanRequest loanRequest = getLoan(user, loanId);
 
         if(loanRequest == null){
             throw new RuntimeException("loan not found");
         }
+
+        if(!Status.APPROVED.equals(loanRequest.getStatus())){
+            if(Status.PAID.equals(request.getStatus())){
+                throw new RuntimeException("Loan is already paid");
+            }
+            throw new RuntimeException("loan is not approved");
+        }
         double amount = request.getAmount();
 
         List<Repayment> repayments = loanRequest.getRepayments();
+
         for (Repayment repayment : repayments) {
             if (repayment.getStatus().equals("PENDING")) {
                 if (amount >= repayment.getAmount()) {

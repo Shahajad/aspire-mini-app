@@ -27,11 +27,19 @@ public class CreateDummyUser {
         userService.registerUser(user);
 
         User user1 = User.builder()
-                .id("user")
-                .username("user")
-                .password("user")
+                .id("user1")
+                .username("user1")
+                .password("user1")
                 .roles(new HashSet<>(Collections.singletonList(Role.USER)))
                 .build();
         userService.registerUser(user1);
+
+        User user2 = User.builder()
+                .id("user2")
+                .username("user2")
+                .password("user2")
+                .roles(new HashSet<>(Collections.singletonList(Role.USER)))
+                .build();
+        userService.registerUser(user2);
     }
 }

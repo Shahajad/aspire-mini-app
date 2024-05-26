@@ -62,8 +62,8 @@ public class LoanControllerTest {
         LoanRequest loanRequest = new LoanRequest(1000, 12, user);
         Loan loan = new Loan(1000, 12);
         // Call controller method
-        Loan createdLoan = loanController.createLoan(1000, 12, request);
-        assertEquals(loan, createdLoan);
+        ResponseEntity<Loan> createdLoan = loanController.createLoan(1000, 12, request);
+        assertEquals(loan, createdLoan.getBody());
     }
 
     @Test

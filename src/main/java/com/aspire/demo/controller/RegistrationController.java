@@ -30,8 +30,14 @@ public class RegistrationController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(String userName, String password, Role role,
                                                HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        User adminUser = jwtUtil.validateUser(authorizationHeader);
+        User adminUser = null;
+        try{
+            String authorizationHeader = request.getHeader("Authorization");
+            adminUser = jwtUtil.validateUser(authorizationHeader);
+        }catch (Exception e){
+            log.error("exception ", e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
         if(!adminUser.getRoles().contains(Role.ADMIN)){
             return new ResponseEntity<>("Only Admin can create new users", HttpStatus.UNAUTHORIZED);
         }

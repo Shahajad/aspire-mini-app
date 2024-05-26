@@ -32,10 +32,17 @@ public class LoanController {
     JwtUtil jwtUtil;
 
     @PostMapping
-    public Loan createLoan(@RequestParam double amount, @RequestParam int term,
+    public ResponseEntity<Loan> createLoan(@RequestParam double amount, @RequestParam int term,
                            HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        User user = jwtUtil.validateUser(authorizationHeader);
+
+        User user = null;
+        try{
+            String authorizationHeader = request.getHeader("Authorization");
+            user = jwtUtil.validateUser(authorizationHeader);
+        }catch (Exception e){
+            log.error("exception ", e);
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
         LoanRequest loanRequest = new LoanRequest(amount, term, user);
         Command loanManager = loanCatalog.getCommand("loanManager");
 
@@ -45,15 +52,21 @@ public class LoanController {
             throw new RuntimeException(e);
         }
         log.info("loan created {}", loanRequest.getId());
-        return Utility.translate(loanRequest);
+        return new ResponseEntity<>(Utility.translate(loanRequest), HttpStatus.OK);
     }
 
     @PutMapping("/{loanId}/approve")
     public ResponseEntity<String> approveLoan(@PathVariable Long loanId,
                                               HttpServletRequest request) {
+        User user = null;
         try{
             String authorizationHeader = request.getHeader("Authorization");
-            User user = jwtUtil.validateUser(authorizationHeader);
+            user = jwtUtil.validateUser(authorizationHeader);
+        }catch (Exception e){
+            log.error("exception ", e);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        try{
             Command loanApprovalFlow = loanCatalog.getCommand("loanApprovalFlow");
             loanApprovalFlow.execute(new LoanRequest(loanId, user));
             return new ResponseEntity<>("Approved", HttpStatus.OK);
@@ -65,8 +78,14 @@ public class LoanController {
     @GetMapping("/{loanId}")
     public ResponseEntity<Loan> getLoan(@PathVariable Long loanId,
                                         HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        User user = jwtUtil.validateUser(authorizationHeader);
+        User user = null;
+        try{
+            String authorizationHeader = request.getHeader("Authorization");
+            user = jwtUtil.validateUser(authorizationHeader);
+        }catch (Exception e){
+            log.error("exception ", e);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         LoanRequest loanRequest = loanService.getLoan(user, loanId);
         if (loanRequest == null) {
             return ResponseEntity.notFound().build();

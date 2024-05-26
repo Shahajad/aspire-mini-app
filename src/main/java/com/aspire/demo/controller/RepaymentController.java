@@ -26,8 +26,15 @@ public class RepaymentController {
     @PostMapping
     public ResponseEntity<String> addRepayment(@PathVariable Long loanId, @RequestParam double amount,
                                              HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        User user = jwtUtil.validateUser(authorizationHeader);
+        User user = null;
+        try{
+            String authorizationHeader = request.getHeader("Authorization");
+            user = jwtUtil.validateUser(authorizationHeader);
+        }catch (Exception e){
+            log.error("exception ", e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+
         LoanRequest loanRequestRequest = new LoanRequest();
         loanRequestRequest.setId(loanId);
         loanRequestRequest.setAmount(amount);
