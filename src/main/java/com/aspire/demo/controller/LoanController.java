@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/loans")
@@ -87,6 +88,22 @@ public class LoanController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         LoanRequest loanRequest = loanService.getLoan(user, loanId);
+        if (loanRequest == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(Utility.translate(loanRequest));
+    }
+    @GetMapping
+    public ResponseEntity<List<Loan>> getLoans(HttpServletRequest request) {
+        User user = null;
+        try{
+            String authorizationHeader = request.getHeader("Authorization");
+            user = jwtUtil.validateUser(authorizationHeader);
+        }catch (Exception e){
+            log.error("exception ", e);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        List<LoanRequest> loanRequest = loanService.getLoans(user);
         if (loanRequest == null) {
             return ResponseEntity.notFound().build();
         }

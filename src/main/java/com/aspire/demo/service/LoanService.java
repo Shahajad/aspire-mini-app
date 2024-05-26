@@ -127,4 +127,16 @@ public class LoanService {
         }
         return null;
     }
+
+    public List<LoanRequest> getLoans(User user) {
+        List<LoanRequest> loanRequests = new ArrayList<>();
+        if(user.getRoles().contains(Role.ADMIN)){
+            userLoanStore.forEach((k,v)->{
+                loanRequests.addAll(v);
+            });
+        }else{
+            return userLoanStore.getOrDefault(user.getId(), loanRequests);
+        }
+        return loanRequests;
+    }
 }
